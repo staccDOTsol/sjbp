@@ -255,7 +255,7 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 
 		// calculate profitability
 
-		let simulatedProfit = calculateProfit(baseAmount, Math.floor(await route.outAmount * 1.002));
+		let simulatedProfit = calculateProfit(baseAmount, await route.outAmount);
 
 		// store max profit spotted
 		if (simulatedProfit > cache.maxProfitSpotted["buy"]) {
@@ -278,8 +278,7 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 		let tx, performanceOfTx;
 		if (
 			!cache.swappingRightNow &&
-			(cache.hotkeys.e ||
-				cache.hotkeys.r ||
+			(
 				simulatedProfit >= cache.config.minPercProfit)
 		) {
 			// hotkeys

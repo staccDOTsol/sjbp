@@ -250,12 +250,12 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 			performance.now() - performanceOfRouteCompStart;
 
 		// choose first route
-		const route = await routes.routesInfos[Math.floor(Math.random() * 4)];
+		const route = await routes.routesInfos[Math.floor(Math.random() * 2)];
 
 
 		// calculate profitability
 
-		let simulatedProfit = calculateProfit(baseAmount, await route.amountWithFees);
+		let simulatedProfit = calculateProfit(baseAmount, Math.floor(await route.amountWithFees));
 
 		// store max profit spotted
 		if (simulatedProfit > cache.maxProfitSpotted["buy"]) {

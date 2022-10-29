@@ -68,22 +68,22 @@ const setup = async () => {
 
 		spinner.text = "Setting up connection ...";
 		// connect to RPC
-		const connection = new Connection(cache.config.rpc[0]);
+		const connection = new Connection(cache.config.rpc[Math.floor(Math.random(cache.config.rpc.length-1))]);
 
 		spinner.text = "Loading Jupiter SDK...";
 
 		const jupiter = await Jupiter.load({
 			connection,
 			cluster: cache.config.network,
-			user: wallet,
-			restrictIntermediateTokens: true,
+			user: wallet,	
+
 			wrapUnwrapSOL: cache.wrapUnwrapSOL,
 		});
 
 		cache.isSetupDone = true;
 		spinner.succeed("Setup done!");
-
-		return { jupiter, tokenA, tokenB };
+		
+		return { jupiter, tokenA, tokenB};
 	} catch (error) {
 		if (spinner)
 			spinner.fail(

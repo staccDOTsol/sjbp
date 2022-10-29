@@ -16,7 +16,28 @@ const cache = require("./cache");
 const { setup, getInitialOutAmountWithSlippage } = require("./setup");
 const { printToConsole } = require("./ui/");
 const { swap, failedSwapHandler, successSwapHandler } = require("./swap");
+let tokenaa
+let tokenbb 
+let baddies = []
 
+process.on('SIGINT', signal => {
+	if (!baddies.includes(tokenaa + tokenbb)){
+		baddies.push(tokenaa + tokenbb)
+	}
+  })
+  process.on('uncaughtException', err => {
+	console.log(err)
+	if (!baddies.includes(tokenaa + tokenbb)){
+		baddies.push(tokenaa + tokenbb)
+	}
+  })
+  process.on('unhandledRejection', (reason, promise) => {
+	if (!baddies.includes(tokenaa + tokenbb)){
+		baddies.push(tokenaa + tokenbb)
+	}
+  })
+  
+ const fs = require('fs')
 const pingpongStrategy = async (jupiter, tokenA, tokenB) => {
 	cache.iteration++;
 	const date = new Date();
@@ -68,6 +89,7 @@ const pingpongStrategy = async (jupiter, tokenA, tokenB) => {
 		// choose first route
 		const route = await routes.routesInfos[0];
 
+		checkRoutesResponse(routes);
 		// update slippage with "profit or kill" slippage
 		if (cache.config.slippage === "profitOrKill") {
 			route.outAmountWithSlippage =
@@ -76,7 +98,7 @@ const pingpongStrategy = async (jupiter, tokenA, tokenB) => {
 
 		// calculate profitability
 
-		let simulatedProfit = calculateProfit(baseAmount, await route.outAmount);
+		let simulatedProfit = calculateProfit(amountToTrade, await route.outAmount);
 
 		// store max profit spotted
 		if (
@@ -213,18 +235,26 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 		updateIterationsPerMin(cache);
 
 		// Calculate amount that will be used for trade
-		const amountToTrade =  Math.floor(((Math.random() * 10) + 0.1) * 10 ** 9)/*
+		const amountToTrade =  Math.floor(((Math.random() * 1) + 0.01) * 10 ** tokenA.decimals)/*
 			cache.config.tradeSize.strategy === "cumulative"
 				? cache.currentBalance["tokenA"]
 				: cache.initialBalance["tokenA"]; */
-		const baseAmount = amountToTrade//cache.lastBalance["tokenA"];
+		const baseAmount = cache.lastBalance["tokenA"];
 
 		// default slippage
 		const slippage =
 			typeof cache.config.slippage === "number" ? cache.config.slippage : 1;
 		// set input / output token
+		let tokens = JSON.parse(fs.readFileSync("./temp/tokens.json"));
+				// find tokens full Object
+			let	tokenB = tokens[Math.floor(Math.random()*tokens.length)]
+			const outputToken = tokenB;
 		const inputToken = tokenA;
-		const outputToken = tokenA;
+tokenaa = tokenA.address
+tokenbb = tokenB.address
+console.log(1)
+if (!baddies.includes(tokenaa + tokenbb)){
+	console.log(tokenaa + tokenbb)
 
 		// check current routes
 		const performanceOfRouteCompStart = performance.now();
@@ -249,7 +279,17 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 			performance.now() - performanceOfRouteCompStart;
 
 		// choose first route
-		const route = await routes.routesInfos.find((res) => res.marketInfos.length <= 2);
+		const route = await routes.routesInfos.find((res) => res.marketInfos.length <= 80);
+
+		// choose first route
+		const routes2 = await jupiter.computeRoutes({
+			outputMint: new PublicKey(inputToken.address),
+			inputMint: new PublicKey(outputToken.address),
+			inputAmount: await route.outAmount,
+			slippage,
+			forceFetch: true,
+		});
+		const route2 = await routes2.routesInfos[0];
 
 		// update slippage with "profit or kill" slippage
 		if (cache.config.slippage === "profitOrKill") {
@@ -258,7 +298,7 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 
 		// calculate profitability
 
-		let simulatedProfit = calculateProfit(baseAmount, await route.outAmount);
+		let simulatedProfit = calculateProfit(baseAmount, await route2.outAmount);
 
 		// store max profit spotted
 		if (simulatedProfit > cache.maxProfitSpotted["buy"]) {
@@ -315,7 +355,7 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 					}
 				}, 500);
 
-				[tx, performanceOfTx] = await swap(jupiter, route);
+				[tx, performanceOfTx] = await swap(jupiter, route, route2, tokenB.address, tokenA.address, anountToTrade);
 
 				// stop refreshing status
 				clearInterval(printTxStatus);
@@ -362,6 +402,7 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 			route,
 			simulatedProfit,
 		});
+	}
 	} catch (error) {
 		cache.queue[i] = 1;
 		throw error;

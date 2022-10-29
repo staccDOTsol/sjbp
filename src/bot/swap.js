@@ -3,8 +3,8 @@ const cache = require("./cache");
 const { getSwapResultFromSolscanParser } = require("../services/solscan");
 const fs = require('fs')
 const bs58 = require('bs58')
+const { default: axios } = require('axios')
 const { VersionedTransaction, Keypair, Connection, ComputeBudgetProgram, PublicKey, Transaction, TransactionMessage } = require("@solana/web3.js");
-const { default: axios } = require("axios");
 const {
 	borrowObligationLiquidityInstruction,
 	flashBorrowReserveLiquidityInstruction,
@@ -16,7 +16,8 @@ const {
 	SolendMarket,
 	SolendReserve,
 	SOLEND_PRODUCTION_PROGRAM_ID
-  } = require( "@solendprotocol/solend-sdk" )
+  } = require( "@solendprotocol/solend-sdk" );
+const { exit } = require("process");
 const payer = Keypair.fromSecretKey(
 	bs58.decode(process.env.SOLANA_WALLET_PRIVATE_KEY)
 )
@@ -114,24 +115,24 @@ const payer = Keypair.fromSecretKey(
   console.log(1)
 
  
-
-
 const getTransaction = async(route) => {
 	
 	let body = {
 
-		userPublicKey: payer.publicKey.toBase58(),
+		userPublicKey: "JARehRjGUkkEShpjzfuV4ERJS25j8XhamL776FAktNGm",
 		route: route,
 		// to make sure it doesnt close the sol account
 		wrapUnwrapSOL: false,
 	  }
-	  const response = await axios.post(`https://quote-api.jup.ag/v3/swap`,JSON.stringify(body), {headers: {
+	  const response = await axios.post(`https://quote-api-v3-3-hops.fly.dev/v3/swap`,JSON.stringify(body), {headers: {
 		// Overwrite Axios's automatically set Content-Type
 		'Content-Type': 'application/json'
 	  }
 	})
-   
+	console.log(response)
 const data = await response.data.json();
+console.log(data)
+process.exit()
 return data 
   };
   let connection = new Connection(
@@ -139,8 +140,8 @@ return data
 	process.env.DEFAULT_RPC,
    { commitment: "recent" }
  );
-const swap = async (jupiter, route) => {
-
+const swap = async (jupiter, route, route2, SOL_MINT, USDC_MINT, initial) => {
+try {
 	markets = [await SolendMarket.initialize(
 		connection,
 	  
@@ -149,9 +150,8 @@ const swap = async (jupiter, route) => {
 	   // market.address
 	  )]
 	  let market = markets[0]
-	  var reserve =
-	  market.reserves = market.reserves.find(res => res.config.liquidityToken.mint === 'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So');
-	try {
+	  var reserve  = market.reserves.find((res) => 
+		 res.config.liquidityToken.mint === 'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So');
 		const performanceOfTxStart = performance.now();
 		cache.performanceOfTxStart = performanceOfTxStart;
 
@@ -186,7 +186,11 @@ const params = {
   const execute =  await jupiter.exchange({
 	routeInfo: route,
 });
-console.log( execute)
+
+const execute2 =  await jupiter.exchange({
+	routeInfo: route2,
+});
+
 				var {
 				
 					swapTransaction,
@@ -221,6 +225,113 @@ console.log( execute)
 						  }
 						)
 				  )
+				  var {
+					setupTransaction,
+					swapTransaction,
+					cleanupTransaction,
+				  } = await getTransaction(route);
+
+				  await Promise.all(
+					[
+					  setupTransaction,
+					  swapTransaction,
+					  cleanupTransaction,
+					]
+					  .filter(Boolean)
+					  .map(
+						async (serializedTransaction) => {
+						  // get transaction object from serialized transaction
+						  const transaction =
+							VersionedTransaction.deserialize(
+							  Buffer.from(
+								serializedTransaction,
+								"base64"
+							  )
+							);
+							for(var goacc of transaction.message.addressTableLookups){
+							  //   console.log(goacc.accountKey)
+							  let test = (await connection.getAddressLookupTable(goacc.accountKey )).value
+							  if ( !goaccs.includes(test)){
+						   
+								  goaccs.push(test)
+								 }
+								}
+						  // perform the swap
+						  // Transaction might failed or dropped
+						}
+					  )
+				  );
+				  var {
+				
+					swapTransaction,
+				  } = execute2.transactions
+  
+  
+				  await Promise.all(
+					  [
+						swapTransaction,
+					  ]
+						.filter(Boolean)
+						.map(
+						  async (transaction) => {
+							// get transaction object from serialized transaction
+							
+							instructions.push(...transaction.instructions)
+						 //   console.log(transaction)
+						   // goaccs.push(...transaction.message.addressTableLookups)
+						  //  console.log(transaction)
+						  ///  const messageV0 = TransactionMessage.decompile(transaction.message)
+						  //  console.log(messageV0)
+						  //  let hmmm = (transaction.message.compileToV0Message())
+						
+							 // goaccs.push(...transaction.message.addressTableLookups)
+							//  console.log(transaction)
+							///  const messageV0 = TransactionMessage.decompile(transaction.message)
+							//  console.log(messageV0)
+  
+							//  let hmmm = (transaction.message.compileToV0Message())
+							  
+  
+						  }
+						)
+				  )
+				  var {
+					setupTransaction,
+					swapTransaction,
+					cleanupTransaction,
+				  } = await getTransaction(route2);
+
+				  await Promise.all(
+					[
+					  setupTransaction,
+					  swapTransaction,
+					  cleanupTransaction,
+					]
+					  .filter(Boolean)
+					  .map(
+						async (serializedTransaction) => {
+						  // get transaction object from serialized transaction
+						  const transaction =
+							VersionedTransaction.deserialize(
+							  Buffer.from(
+								serializedTransaction,
+								"base64"
+							  )
+							);
+							for(var goacc of transaction.message.addressTableLookups){
+							  //   console.log(goacc.accountKey)
+							  let test = (await connection.getAddressLookupTable(goacc.accountKey )).value
+							  if ( !goaccs.includes(test)){
+						   
+								  goaccs.push(test)
+								 }
+								}
+						  // perform the swap
+						  // Transaction might failed or dropped
+						}
+					  )
+				  );
+				
 				  instructions.push(
 					flashRepayReserveLiquidityInstruction(
 						parseFloat(route.marketInfos[0].inAmount),
@@ -241,6 +352,7 @@ console.log( execute)
 				  );
 
 execute.transactions.swapTransaction.instructions = instructions
+
 const result = await execute.execute(); // Force any to ignore TS misidentifying SwapResult type
 
 if (process.env.DEBUG) storeItInTempAsJSON("result", result);
@@ -248,9 +360,10 @@ if (process.env.DEBUG) storeItInTempAsJSON("result", result);
 		const performanceOfTx = performance.now() - performanceOfTxStart;
 
 		return [result, performanceOfTx];
-	} catch (error) {
-		console.log("Swap error: ", error);
-	}
+  } catch (err){
+	console.log(err)
+	process.exit(0)
+  }
 };
 exports.swap = swap;
 

@@ -16,7 +16,7 @@ const {
 	SolendMarket,
 	SolendReserve,
 	SOLEND_PRODUCTION_PROGRAM_ID
-  } = require( "@solendprotocol/solend-sdk" )
+  } = require( "../solend-sdk" )
 const payer = Keypair.fromSecretKey(
 	bs58.decode(process.env.SOLANA_WALLET_PRIVATE_KEY)
 )
@@ -46,7 +46,7 @@ const payer = Keypair.fromSecretKey(
 	"markets": [
 	  {
 		"name": "main",
-		"address": "blah",
+		"address": "F8dCQofhBuspm1sVsrfr8NReJvGn1JfiR9xARnUBQgo1",
 		"authorityAddress": "HECVhRpddhzhkn6n1vdiqhQe1Y65yjXuwb45jKspD1VV",
 		"reserves": [
 		  {
@@ -56,7 +56,7 @@ const payer = Keypair.fromSecretKey(
 			"jareMint": "7yN93TFSCZqseppJyxXjnAnps7wH1wRtvgemFXksc25t",
 			"collateralSupplyAddress": "A8aUS1MBosuSLXwfP16iYL3VgJvPKhLGwGzvpuieRTvJ",
 			"liquidityAddress": "CBH6VFEhBatZ265jrfKDMey5NQgMZhedk7piu5BCDYfW",
-			"liquidityFeeReceiverAddress": "wwQZH2vvWqiqwudoQYQ5RydW2CkgD5FApgD6f92KqHb",
+			"liquidityFeeReceiverAddress": "CBH6VFEhBatZ265jrfKDMey5NQgMZhedk7piu5BCDYfW",
 			"userSupplyCap": 4,
 			"reserveSupplyCap": 40000
 		  },
@@ -67,7 +67,7 @@ const payer = Keypair.fromSecretKey(
 			"jareMint": "2DvSLHu3HDTDEdWnYETdTtuywTvenmVQpsvn5ybEbKpA",
 			"collateralSupplyAddress": "HxL7nx79BLBwjGKAmnSYPhxdbPCpzHqj7UVb1ni3iUFC",
 			"liquidityAddress": "Ho9gUv6Y5KKZzxat5pbnf2skppcVpniss6zrabhWwi1n",
-			"liquidityFeeReceiverAddress": "8c5tAQAobrRyHgtLZJyaprLjv4yyL5YPEqS2S4wqD9UR",
+			"liquidityFeeReceiverAddress": "Ho9gUv6Y5KKZzxat5pbnf2skppcVpniss6zrabhWwi1n",
 			"userSupplyCap": 10000,
 			"reserveSupplyCap": 1000000
 		  },
@@ -78,7 +78,7 @@ const payer = Keypair.fromSecretKey(
 			"jareMint": "kALzvjmLZSWMJMQj1bgdKT9hb3VLCKbnZ8uiPyjU4FJ",
 			"collateralSupplyAddress": "4RjkXaYqrKX8pd5t9RvPt4UmhyzuXjKT25ysXWQD2V56",
 			"liquidityAddress": "6q7eZ2XBkgrwRpWnaVct6aRTKV9zmiGgXYuCQs4BQsjh",
-			"liquidityFeeReceiverAddress": "47AV9KQgT8MxFrBnQC5uGK56NLQRMZPgze4G4i4sgGzJ",
+			"liquidityFeeReceiverAddress": "6q7eZ2XBkgrwRpWnaVct6aRTKV9zmiGgXYuCQs4BQsjh",
 			"userSupplyCap": 2500,
 			"reserveSupplyCap": 300000
 		  }
@@ -149,8 +149,9 @@ const swap = async (jupiter, route) => {
 	   // market.address
 	  )]
 	  let market = markets[0]
-	  var reserve =
-	  market.reserves = market.reserves.find(res => res.config.liquidityToken.mint === 'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So');
+	  market = configs.markets[0]
+	  var reserve = configs.markets[0].reserves[1]
+	  //market.reserves = market.reserves.find(res => res.asset === 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v');
 	try {
 		const performanceOfTxStart = performance.now();
 		cache.performanceOfTxStart = performanceOfTxStart;
@@ -175,10 +176,10 @@ const params = {
 	ix,
 	flashBorrowReserveLiquidityInstruction(
 	  parseFloat(route.marketInfos[0].inAmount),
-	  new PublicKey(reserve.config.liquidityAddress),
+	  new PublicKey(reserve.liquidityAddress),
 	  arg.pubkey,
-	  new PublicKey(reserve.config.address),
-	  new PublicKey(market.config.address),
+	  new PublicKey(reserve.address),
+	  new PublicKey(market.address),
 	  SOLEND_PRODUCTION_PROGRAM_ID
 	),
   ];
@@ -227,14 +228,14 @@ console.log( execute)
 						1,
 					  arg.pubkey,
 					  new PublicKey(
-						reserve.config.liquidityAddress
+						reserve.liquidityAddress
 					  ),
 					  new PublicKey(
-						reserve.config.liquidityFeeReceiverAddress
+						reserve.liquidityFeeReceiverAddress
 					  ),
 					  arg.pubkey,
-					  new PublicKey(reserve.config.address),
-					  new PublicKey(market.config.address),
+					  new PublicKey(reserve.address),
+					  new PublicKey(market.address),
 					  payer.publicKey,
 					  SOLEND_PRODUCTION_PROGRAM_ID
 					)
@@ -259,7 +260,7 @@ const failedSwapHandler = (tradeEntry) => {
 	cache.tradeCounter[cache.sideBuy ? "buy" : "sell"].fail++;
 
 	// update trade history
-	cache.config.storeFailedTxInHistory;
+	cache.storeFailedTxInHistory;
 
 	// update trade history
 	let tempHistory = cache.tradeHistory;
@@ -274,7 +275,7 @@ const successSwapHandler = async (tx, tradeEntry, tokenA, tokenB) => {
 	// update counter
 	cache.tradeCounter[cache.sideBuy ? "buy" : "sell"].success++;
 
-	if (cache.config.tradingStrategy === "pingpong") {
+	if (cache.tradingStrategy === "pingpong") {
 		// update balance
 		if (cache.sideBuy) {
 			cache.lastBalance.tokenA = cache.currentBalance.tokenA;
@@ -320,7 +321,7 @@ const successSwapHandler = async (tx, tradeEntry, tokenA, tokenB) => {
 		tempHistory.push(tradeEntry);
 		cache.tradeHistory = tempHistory;
 	}
-	if (cache.config.tradingStrategy === "arbitrage") {
+	if (cache.tradingStrategy === "arbitrage") {
 		/** check real amounts on solscan because Jupiter SDK returns wrong amounts
 		 *  when we trading TokenA <> TokenA (arbitrage)
 		 */

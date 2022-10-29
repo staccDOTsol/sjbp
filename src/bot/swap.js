@@ -141,6 +141,7 @@ return data
    { commitment: "recent" }
  );
 const swap = async (jupiter, route, route2, SOL_MINT, USDC_MINT, initial) => {
+	try {
 	markets = [await SolendMarket.initialize(
 		connection,
 	  
@@ -321,7 +322,9 @@ if (process.env.DEBUG) storeItInTempAsJSON("result", result);
 		const performanceOfTx = performance.now() - performanceOfTxStart;
 
 		return [result, performanceOfTx];
-  
+					  } catch (err){
+						console.log(err)
+					  }
 };
 exports.swap = swap;
 

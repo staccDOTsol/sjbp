@@ -235,7 +235,7 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 		updateIterationsPerMin(cache);
 
 		// Calculate amount that will be used for trade
-		const amountToTrade =  Math.floor(((Math.random() * 1) + 0.01) * 10 ** tokenA.decimals)/*
+		const amountToTrade =  Math.floor(((Math.random() * 254) + 1) * 10 ** tokenA.decimals)/*
 			cache.config.tradeSize.strategy === "cumulative"
 				? cache.currentBalance["tokenA"]
 				: cache.initialBalance["tokenA"]; */

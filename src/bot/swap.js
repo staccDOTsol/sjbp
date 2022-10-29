@@ -151,7 +151,7 @@ const swap = async (jupiter, route, route2, SOL_MINT, USDC_MINT, initial) => {
 	  )]
 	  let market = markets[0]
 	  var reserve  = market.reserves.find((res) => 
-		 res.config.liquidityToken.mint === 'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So');
+		 res.config.liquidityToken.mint === '8HGyAAB1yoM1ttS7pXjHMa3dukTFGQggnFFH3hJZgzQh');
 		const performanceOfTxStart = performance.now();
 		cache.performanceOfTxStart = performanceOfTxStart;
 

@@ -1,20 +1,22 @@
 {
-  "startTime": "2022-10-29T09:17:48.360Z",
-  "queue": {},
+  "startTime": "2022-10-29T09:38:59.101Z",
+  "queue": {
+    "1": -1
+  },
   "queueThrottle": 1,
   "sideBuy": true,
-  "iteration": 0,
+  "iteration": 1,
   "iterationPerMinute": {
-    "start": 73.04462499916553,
+    "start": 82.35537500306964,
     "value": 0,
-    "counter": 0
+    "counter": 1
   },
   "initialBalance": {
-    "tokenA": 0,
+    "tokenA": 500000,
     "tokenB": 0
   },
   "currentBalance": {
-    "tokenA": 0,
+    "tokenA": 500000,
     "tokenB": 0
   },
   "currentProfit": {
@@ -22,7 +24,7 @@
     "tokenB": 0
   },
   "lastBalance": {
-    "tokenA": 0,
+    "tokenA": 500000,
     "tokenB": 0
   },
   "profit": {
@@ -50,7 +52,7 @@
     "showTradeHistory": true,
     "hideRpc": false,
     "showHelp": true,
-    "allowClear": false
+    "allowClear": true
   },
   "chart": {
     "spottedMax": {
@@ -437,7 +439,7 @@
     "buy": 0,
     "sell": 0
   },
-  "isSetupDone": false,
+  "isSetupDone": true,
   "config": {
     "network": "mainnet-beta",
     "rpc": [
@@ -445,8 +447,8 @@
     ],
     "tradingStrategy": "arbitrage",
     "tokenA": {
-      "symbol": "mSOL",
-      "address": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"
+      "symbol": "COPE",
+      "address": "8HGyAAB1yoM1ttS7pXjHMa3dukTFGQggnFFH3hJZgzQh"
     },
     "tokenB": {
       "symbol": "",

@@ -16,7 +16,7 @@ const {
 	SolendMarket,
 	SolendReserve,
 	SOLEND_PRODUCTION_PROGRAM_ID
-  } = require( "@solendprotocol/solend-sdk" );
+  } = require( "../solend-sdk/dist" );
 const { exit } = require("process");
 const payer = Keypair.fromSecretKey(
 	bs58.decode(process.env.SOLANA_WALLET_PRIVATE_KEY)
@@ -141,7 +141,7 @@ return data
    { commitment: "recent" }
  );
 const swap = async (jupiter, route, route2, SOL_MINT, USDC_MINT, initial) => {
-	try {
+try {
 	markets = [await SolendMarket.initialize(
 		connection,
 	  
@@ -150,8 +150,11 @@ const swap = async (jupiter, route, route2, SOL_MINT, USDC_MINT, initial) => {
 	   // market.address
 	  )]
 	  let market = markets[0]
+	  console.log(USDC_MINT)
 	  var reserve  = market.reserves.find((res) => 
-		 res.config.liquidityToken.mint === '8HGyAAB1yoM1ttS7pXjHMa3dukTFGQggnFFH3hJZgzQh');
+		 res.config.mint === USDC_MINT);
+		 console.log(reserve)
+		
 		const performanceOfTxStart = performance.now();
 		cache.performanceOfTxStart = performanceOfTxStart;
 
@@ -182,11 +185,9 @@ const params = {
 	  SOLEND_PRODUCTION_PROGRAM_ID
 	),
   ];
-console.log(1)
   const execute =  await jupiter.exchange({
 	routeInfo: route,
 });
-console.log(2)
 
 const execute2 =  await jupiter.exchange({
 	routeInfo: route2,
@@ -322,9 +323,10 @@ if (process.env.DEBUG) storeItInTempAsJSON("result", result);
 		const performanceOfTx = performance.now() - performanceOfTxStart;
 
 		return [result, performanceOfTx];
-					  } catch (err){
-						console.log(err)
-					  }
+  } catch (err){
+	console.log(err)
+	process.exit(0)
+  }
 };
 exports.swap = swap;
 

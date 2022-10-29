@@ -1,0 +1,26 @@
+{
+  "network": "mainnet-beta",
+  "rpc": [
+    "https://solana-mainnet.g.alchemy.com/v2/WM_Gl7ktiws7icLQVxLP5iVHNQTv8RNk"
+  ],
+  "tradingStrategy": "arbitrage",
+  "tokenA": {
+    "symbol": "mSOL",
+    "address": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"
+  },
+  "tokenB": {
+    "symbol": "",
+    "address": ""
+  },
+  "slippage": 0.5,
+  "minPercProfit": "1",
+  "minInterval": 30,
+  "tradeSize": {
+    "value": 0.5,
+    "strategy": "cumulative"
+  },
+  "ui": {
+    "defaultColor": "cyan"
+  },
+  "storeFailedTxInHistory": true
+}

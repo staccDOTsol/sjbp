@@ -141,7 +141,6 @@ return data
    { commitment: "recent" }
  );
 const swap = async (jupiter, route, route2, SOL_MINT, USDC_MINT, initial) => {
-try {
 	markets = [await SolendMarket.initialize(
 		connection,
 	  
@@ -182,10 +181,11 @@ const params = {
 	  SOLEND_PRODUCTION_PROGRAM_ID
 	),
   ];
-
+console.log(1)
   const execute =  await jupiter.exchange({
 	routeInfo: route,
 });
+console.log(2)
 
 const execute2 =  await jupiter.exchange({
 	routeInfo: route2,
@@ -225,42 +225,7 @@ const execute2 =  await jupiter.exchange({
 						  }
 						)
 				  )
-				  var {
-					setupTransaction,
-					swapTransaction,
-					cleanupTransaction,
-				  } = await getTransaction(route);
-
-				  await Promise.all(
-					[
-					  setupTransaction,
-					  swapTransaction,
-					  cleanupTransaction,
-					]
-					  .filter(Boolean)
-					  .map(
-						async (serializedTransaction) => {
-						  // get transaction object from serialized transaction
-						  const transaction =
-							VersionedTransaction.deserialize(
-							  Buffer.from(
-								serializedTransaction,
-								"base64"
-							  )
-							);
-							for(var goacc of transaction.message.addressTableLookups){
-							  //   console.log(goacc.accountKey)
-							  let test = (await connection.getAddressLookupTable(goacc.accountKey )).value
-							  if ( !goaccs.includes(test)){
-						   
-								  goaccs.push(test)
-								 }
-								}
-						  // perform the swap
-						  // Transaction might failed or dropped
-						}
-					  )
-				  );
+				
 				  var {
 				
 					swapTransaction,
@@ -295,42 +260,38 @@ const execute2 =  await jupiter.exchange({
 						  }
 						)
 				  )
-				  var {
-					setupTransaction,
-					swapTransaction,
-					cleanupTransaction,
-				  } = await getTransaction(route2);
+				  let index = USDC_MINT+","+SOL_MINT
+                              for (var mi of route.marketInfos) {
+index+=","+mi.id
+                              }
+                              for (var mi of route2.marketInfos) {
+                                  index+=","+mi.id
+                              }
+                              console.log(index)
+                              let argh = JSON.parse(fs.readFileSync('./answers2.json').toString())
+                              var mematey = -1
+                              let blargs = []
+                             
+                              for (var arg2 of Object.keys(argh)){
+                                mematey++
+                                for (var blarg of index.split(',')){
+                                  if (arg2.split(',').includes(blarg) && !blargs.includes(blarg)){
+                                    for (var hmph of Object.values(argh)[mematey]){
+                                      let test = (await connection.getAddressLookupTable(new PublicKey(hmph))).value
+                                        if ( !goaccs.includes(test)){
+                                          goaccs.push(test)
+                                          blargs.push(blarg)
+                                      
+                                      
+                                    
+                                  }
+            
+                                    }
 
-				  await Promise.all(
-					[
-					  setupTransaction,
-					  swapTransaction,
-					  cleanupTransaction,
-					]
-					  .filter(Boolean)
-					  .map(
-						async (serializedTransaction) => {
-						  // get transaction object from serialized transaction
-						  const transaction =
-							VersionedTransaction.deserialize(
-							  Buffer.from(
-								serializedTransaction,
-								"base64"
-							  )
-							);
-							for(var goacc of transaction.message.addressTableLookups){
-							  //   console.log(goacc.accountKey)
-							  let test = (await connection.getAddressLookupTable(goacc.accountKey )).value
-							  if ( !goaccs.includes(test)){
-						   
-								  goaccs.push(test)
-								 }
-								}
-						  // perform the swap
-						  // Transaction might failed or dropped
-						}
-					  )
-				  );
+                                  }
+                                }
+                              }
+
 				
 				  instructions.push(
 					flashRepayReserveLiquidityInstruction(
@@ -360,10 +321,7 @@ if (process.env.DEBUG) storeItInTempAsJSON("result", result);
 		const performanceOfTx = performance.now() - performanceOfTxStart;
 
 		return [result, performanceOfTx];
-  } catch (err){
-	console.log(err)
-	process.exit(0)
-  }
+  
 };
 exports.swap = swap;
 

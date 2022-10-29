@@ -213,7 +213,7 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 		updateIterationsPerMin(cache);
 
 		// Calculate amount that will be used for trade
-		const amountToTrade =  Math.floor(Math.random() * 10 + 0.1 * 10 ** 9)/*
+		const amountToTrade =  Math.floor(((Math.random() * 10) + 0.1) * 10 ** 9)/*
 			cache.config.tradeSize.strategy === "cumulative"
 				? cache.currentBalance["tokenA"]
 				: cache.initialBalance["tokenA"]; */
@@ -281,8 +281,7 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 		let tx, performanceOfTx;
 		if (
 			!cache.swappingRightNow &&
-			(cache.hotkeys.e ||
-				cache.hotkeys.r ||
+			(
 				simulatedProfit >= cache.config.minPercProfit)
 		) {
 			// hotkeys

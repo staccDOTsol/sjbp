@@ -33,7 +33,7 @@ const pingpongStrategy = async (jupiter, tokenA, tokenB) => {
 				? cache.currentBalance[cache.sideBuy ? "tokenA" : "tokenB"]
 				: cache.initialBalance[cache.sideBuy ? "tokenA" : "tokenB"];
 
-		const baseAmount = cache.lastBalance[cache.sideBuy ? "tokenB" : "tokenA"];
+		const baseAmount = amountToTrade//cache.lastBalance[cache.sideBuy ? "tokenB" : "tokenA"];
 
 		// default slippage
 		const slippage =
@@ -217,7 +217,7 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 			cache.config.tradeSize.strategy === "cumulative"
 				? cache.currentBalance["tokenA"]
 				: cache.initialBalance["tokenA"]; */
-		const baseAmount = cache.lastBalance["tokenA"];
+		const baseAmount = amountToTrade//cache.lastBalance["tokenA"];
 
 		// default slippage
 		const slippage =
@@ -284,17 +284,8 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 			(
 				simulatedProfit >= cache.config.minPercProfit)
 		) {
-			// hotkeys
-			if (cache.hotkeys.e) {
-				console.log("[E] PRESSED - EXECUTION FORCED BY USER!");
-				cache.hotkeys.e = false;
-			}
-			if (cache.hotkeys.r) {
-				console.log("[R] PRESSED - REVERT BACK SWAP!");
-				route.outAmountWithSlippage = 0;
-			}
 
-			if (cache.tradingEnabled || cache.hotkeys.r) {
+			if (cache.tradingEnabled ) {
 				cache.swappingRightNow = true;
 				// store trade to the history
 				let tradeEntry = {

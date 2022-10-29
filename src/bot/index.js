@@ -218,7 +218,7 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 			cache.config.tradeSize.strategy === "cumulative"
 				? cache.currentBalance["tokenA"]
 				: cache.initialBalance["tokenA"]; */
-		const baseAmount = cache.lastBalance["tokenA"];
+		const baseAmount = amountToTrade//cache.lastBalance["tokenA"];
 
 		// default slippage
 		const slippage =
@@ -250,16 +250,12 @@ const arbitrageStrategy = async (jupiter, tokenA) => {
 			performance.now() - performanceOfRouteCompStart;
 
 		// choose first route
-		const route = await routes.routesInfos[0];
+		const route = await routes.routesInfos[Math.floor(Math.random() * 4)];
 
-		// update slippage with "profit or kill" slippage
-		if (cache.config.slippage === "profitOrKill") {
-			route.outAmountWithSlippage = cache.lastBalance["tokenA"];
-		}
 
 		// calculate profitability
 
-		let simulatedProfit = calculateProfit(baseAmount, await route.outAmount);
+		let simulatedProfit = calculateProfit(baseAmount, await route.outAmountWithFees);
 
 		// store max profit spotted
 		if (simulatedProfit > cache.maxProfitSpotted["buy"]) {
